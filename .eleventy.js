@@ -1,6 +1,40 @@
 const markdownIt = require("markdown-it");
+const Image = require("@11ty/eleventy-img");
+
+// Responsive image shortcode: resizes CMS-uploaded images and serves WebP
+// (with an original-format fallback) so a large photo uploaded via the CMS
+// is scaled down automatically at build time. Accepts CMS paths with or
+// without a leading slash (e.g. "/img/x.jpg" or "img/x.jpg").
+async function imageShortcode(src, alt, className, sizes, loading, fetchpriority) {
+  if (!src) return "";
+  const inputPath = src.replace(/^\//, "");
+  try {
+    const metadata = await Image(inputPath, {
+      widths: [400, 800, 1200, 1600],
+      formats: ["webp", "auto"],
+      outputDir: "./_site/img/optimized/",
+      urlPath: "/img/optimized/",
+    });
+    const attrs = {
+      alt: alt || "",
+      sizes: sizes || "100vw",
+      loading: loading || "lazy",
+      decoding: "async",
+    };
+    if (className) attrs.class = className;
+    if (fetchpriority) attrs.fetchpriority = fetchpriority;
+    return Image.generateHTML(metadata, attrs);
+  } catch (e) {
+    // Never break the build over one bad image path - fall back to the original.
+    console.warn(`[image] could not optimise ${src}: ${e.message}`);
+    const cls = className ? ` class="${className}"` : "";
+    return `<img src="${src}" alt="${alt || ""}"${cls} loading="${loading || "lazy"}" decoding="async">`;
+  }
+}
 
 module.exports = function(eleventyConfig) {
+
+  eleventyConfig.addAsyncShortcode("image", imageShortcode);
 
   // Configure markdown-it for inline markdown rendering
   const md = markdownIt({

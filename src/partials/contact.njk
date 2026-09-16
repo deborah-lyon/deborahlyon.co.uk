@@ -16,7 +16,7 @@
             </div>
 
             <div>
-                <img src="{{ site.contact.mapImage }}" alt="Map showing location of {{ site.contact.address.streetAddress }}, {{ site.contact.address.locality }}" class="contact__map" width="900" height="600">
+                {% image site.contact.mapImage, "Map showing location of " + site.contact.address.streetAddress + ", " + site.contact.address.locality, "contact__map", "(max-width: 900px) 100vw, 900px", "lazy" %}
             </div>
 
             <div>

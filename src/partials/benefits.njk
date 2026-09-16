@@ -6,7 +6,7 @@
                 <h2 class="section-benefits__box-title">{{ benefits.heading }}</h2>
                 {{ benefits.intro | markdownFull | safe }}
             </div>
-            <img src="{{ benefits.image }}" alt="{{ benefits.imageAlt }}" class="section-benefits__image" width="600" height="400">
+            {% image benefits.image, benefits.imageAlt, "section-benefits__image", "(max-width: 700px) 100vw, 600px", "lazy" %}
         </div>
 
         <div class="section-benefits__box bg-mid">
